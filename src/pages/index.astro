@@ -1,0 +1,578 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+	title="StillMotion — Turn Any Photo Into a Video Clip"
+	description="Turn any photo into a downloadable MP4 or WebM video clip, right in your browser. No uploads, no server — 100% private, powered by ffmpeg.wasm."
+	canonicalPath="/"
+>
+	<section class="mx-auto max-w-3xl text-center">
+		<span
+			class="inline-block rounded-full px-4 py-1 text-xs font-semibold uppercase tracking-wide"
+			style="background:#FFFFFF; border:1px solid #E8DFC8; color:#C9982E;"
+		>
+			Private &middot; Client-side &middot; Free
+		</span>
+		<h1 class="mt-5 text-4xl font-bold tracking-tight sm:text-5xl">
+			Turn any photo into a video clip
+		</h1>
+		<p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed" style="color:#5C4F3D;">
+			Drop in a still photo, choose a duration and format, and StillMotion
+			renders a real, downloadable MP4 or WebM &mdash; entirely inside your
+			browser tab. Nothing you upload is ever sent anywhere.
+		</p>
+	</section>
+
+	<section class="mx-auto mt-12 max-w-3xl">
+		<div
+			class="rounded-2xl p-6 shadow-sm sm:p-8"
+			style="background:#FFFFFF; border:1px solid #E8DFC8;"
+		>
+			<form id="tool-form" class="space-y-7">
+				<div>
+					<label
+						for="image-input"
+						class="block text-sm font-semibold"
+						style="color:#2B2013;"
+					>
+						1. Choose an image
+					</label>
+					<label
+						id="drop-zone"
+						for="image-input"
+						class="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition"
+						style="border-color:#E8DFC8; background:#FAF6EC;"
+					>
+						<svg
+							class="h-8 w-8"
+							style="color:#C9982E;"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+							/>
+						</svg>
+						<span class="mt-3 text-sm font-medium" style="color:#2B2013;">
+							Click to choose a photo, or drag one here
+						</span>
+						<span class="mt-1 text-xs" style="color:#8A7C64;">
+							JPG, PNG, WebP, HEIC/HEIF &mdash; up to your browser's memory limit
+						</span>
+					</label>
+					<input
+						id="image-input"
+						type="file"
+						accept="image/*,.heic,.heif"
+						class="hidden"
+					/>
+					<div id="preview-wrap" class="mt-4 hidden">
+						<p class="mb-2 text-xs font-semibold uppercase tracking-wide" style="color:#8A7C64;">
+							Preview
+						</p>
+						<img
+							id="preview-img"
+							alt="Selected image preview"
+							class="max-h-64 w-auto rounded-xl"
+							style="border:1px solid #E8DFC8;"
+						/>
+					</div>
+				</div>
+
+				<div class="grid gap-6 sm:grid-cols-2">
+					<div>
+						<label
+							for="duration-input"
+							class="block text-sm font-semibold"
+							style="color:#2B2013;"
+						>
+							2. Duration (seconds)
+						</label>
+						<input
+							id="duration-input"
+							type="number"
+							min="1"
+							max="30"
+							step="1"
+							value="5"
+							class="mt-2 block w-full rounded-lg px-3 py-2 text-sm outline-none"
+							style="border:1px solid #E8DFC8; background:#FFFFFF; color:#2B2013;"
+						/>
+						<input
+							id="duration-range"
+							type="range"
+							min="1"
+							max="30"
+							step="1"
+							value="5"
+							class="mt-3 w-full accent-[#C9982E]"
+						/>
+					</div>
+
+					<div>
+						<label
+							for="format-select"
+							class="block text-sm font-semibold"
+							style="color:#2B2013;"
+						>
+							3. Output format
+						</label>
+						<select
+							id="format-select"
+							class="mt-2 block w-full rounded-lg px-3 py-2 text-sm outline-none"
+							style="border:1px solid #E8DFC8; background:#FFFFFF; color:#2B2013;"
+						>
+							<option value="mp4">MP4 (H.264)</option>
+							<option value="webm">WebM (VP9)</option>
+						</select>
+					</div>
+				</div>
+
+				<button
+					id="generate-btn"
+					type="button"
+					class="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+					style="background:#C9982E;"
+				>
+					Generate Video
+				</button>
+
+				<div id="status-wrap" class="hidden">
+					<div class="flex items-center justify-between text-sm">
+						<span id="status-text" style="color:#5C4F3D;">Loading engine&hellip;</span>
+						<span id="status-percent" style="color:#8A7C64;"></span>
+					</div>
+					<div class="mt-2 h-2 w-full overflow-hidden rounded-full" style="background:#E8DFC8;">
+						<div
+							id="progress-bar"
+							class="h-full w-0 rounded-full transition-all duration-150"
+							style="background:#C9982E;"
+						>
+						</div>
+					</div>
+				</div>
+
+				<div
+					id="error-box"
+					class="hidden rounded-lg px-4 py-3 text-sm"
+					style="border:1px solid #E0B4A8; background:#FBEEEB; color:#9A3B2B;"
+				>
+				</div>
+
+				<div id="result-wrap" class="hidden rounded-xl p-4" style="border:1px solid #E8DFC8; background:#FAF6EC;">
+					<p class="text-sm font-semibold" style="color:#2B2013;">Your video is ready.</p>
+					<video
+						id="result-video"
+						controls
+						class="mt-3 max-h-80 w-full rounded-lg bg-black"
+						style="border:1px solid #E8DFC8;"
+					></video>
+					<a
+						id="download-link"
+						href="#"
+						class="mt-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold text-white transition"
+						style="background:#C9982E;"
+					>
+						Download video
+					</a>
+				</div>
+			</form>
+		</div>
+	</section>
+
+	<section class="mx-auto mt-16 max-w-3xl">
+		<h2 class="text-2xl font-bold tracking-tight">How it works</h2>
+		<div class="mt-6 grid gap-6 sm:grid-cols-3">
+			<div class="rounded-xl p-5" style="background:#FFFFFF; border:1px solid #E8DFC8;">
+				<div
+					class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold"
+					style="background:#F3E8CC; color:#C9982E;"
+				>1</div>
+				<h3 class="mt-3 text-base font-semibold" style="color:#2B2013;">Choose a photo</h3>
+				<p class="mt-1 text-sm" style="color:#5C4F3D;">
+					Select any JPG, PNG, WebP, or an iPhone HEIC photo &mdash; decoded
+					right in your browser.
+				</p>
+			</div>
+			<div class="rounded-xl p-5" style="background:#FFFFFF; border:1px solid #E8DFC8;">
+				<div
+					class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold"
+					style="background:#F3E8CC; color:#C9982E;"
+				>2</div>
+				<h3 class="mt-3 text-base font-semibold" style="color:#2B2013;">Pick duration & format</h3>
+				<p class="mt-1 text-sm" style="color:#5C4F3D;">
+					1 to 30 seconds, exported as MP4 (H.264) or WebM (VP9).
+				</p>
+			</div>
+			<div class="rounded-xl p-5" style="background:#FFFFFF; border:1px solid #E8DFC8;">
+				<div
+					class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold"
+					style="background:#F3E8CC; color:#C9982E;"
+				>3</div>
+				<h3 class="mt-3 text-base font-semibold" style="color:#2B2013;">Download the clip</h3>
+				<p class="mt-1 text-sm" style="color:#5C4F3D;">
+					ffmpeg.wasm renders the video locally, then you download it directly.
+					Nothing ever touches a server.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<script type="module">
+		import { escapeHtml } from '../lib/escapeHtml.ts';
+
+		const imageInput = document.getElementById('image-input');
+		const dropZone = document.getElementById('drop-zone');
+		const previewWrap = document.getElementById('preview-wrap');
+		const previewImg = document.getElementById('preview-img');
+		const durationInput = document.getElementById('duration-input');
+		const durationRange = document.getElementById('duration-range');
+		const formatSelect = document.getElementById('format-select');
+		const generateBtn = document.getElementById('generate-btn');
+		const statusWrap = document.getElementById('status-wrap');
+		const statusText = document.getElementById('status-text');
+		const statusPercent = document.getElementById('status-percent');
+		const progressBar = document.getElementById('progress-bar');
+		const errorBox = document.getElementById('error-box');
+		const resultWrap = document.getElementById('result-wrap');
+		const resultVideo = document.getElementById('result-video');
+		const downloadLink = document.getElementById('download-link');
+
+		let selectedFile = null;
+		// When the selected file is HEIC/HEIF, this holds the decoded PNG blob
+		// (browsers and ffmpeg.wasm's default core can't read HEIC directly).
+		let decodedBlob = null;
+		let ffmpeg = null;
+		let lastObjectUrl = null;
+
+		function isHeicFile(file) {
+			return (
+				/\.(heic|heif)$/i.test(file.name) ||
+				file.type === 'image/heic' ||
+				file.type === 'image/heif'
+			);
+		}
+
+		async function decodeHeicToPng(file) {
+			const libheif = await import('libheif-js/wasm-bundle');
+			const decoder = new libheif.HeifDecoder();
+			const arrayBuffer = await file.arrayBuffer();
+			const images = decoder.decode(arrayBuffer);
+			if (!images || images.length === 0) {
+				throw new Error('no image found in this HEIC file');
+			}
+			const heicImage = images[0];
+			const width = heicImage.get_width();
+			const height = heicImage.get_height();
+			const canvas = document.createElement('canvas');
+			canvas.width = width;
+			canvas.height = height;
+			const ctx = canvas.getContext('2d');
+			if (!ctx) throw new Error('canvas not supported');
+			const imageData = ctx.createImageData(width, height);
+			await new Promise((res, rej) => {
+				heicImage.display(imageData, (displayData) => {
+					if (!displayData) {
+						rej(new Error('HEIF pixel decode failed'));
+						return;
+					}
+					res(undefined);
+				});
+			});
+			ctx.putImageData(imageData, 0, 0);
+			const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+			if (!blob) throw new Error('could not encode decoded HEIC as PNG');
+			return blob;
+		}
+
+		// Keep the number input and range slider in sync.
+		durationInput.addEventListener('input', () => {
+			durationRange.value = durationInput.value;
+		});
+		durationRange.addEventListener('input', () => {
+			durationInput.value = durationRange.value;
+		});
+
+		dropZone.addEventListener('dragover', (e) => {
+			e.preventDefault();
+			dropZone.style.borderColor = '#C9982E';
+		});
+		dropZone.addEventListener('dragleave', () => {
+			dropZone.style.borderColor = '#E8DFC8';
+		});
+		dropZone.addEventListener('drop', (e) => {
+			e.preventDefault();
+			dropZone.style.borderColor = '#E8DFC8';
+			const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+			if (file) {
+				const dt = new DataTransfer();
+				dt.items.add(file);
+				imageInput.files = dt.files;
+				imageInput.dispatchEvent(new Event('change'));
+			}
+		});
+
+		imageInput.addEventListener('change', async () => {
+			const file = imageInput.files && imageInput.files[0];
+			selectedFile = file || null;
+			decodedBlob = null;
+			hideError();
+			hideResult();
+
+			if (!file) {
+				previewWrap.classList.add('hidden');
+				return;
+			}
+
+			if (isHeicFile(file)) {
+				try {
+					previewWrap.classList.add('hidden');
+					setStatus('Decoding HEIC…', 0);
+					decodedBlob = await decodeHeicToPng(file);
+					clearStatus();
+				} catch (err) {
+					clearStatus();
+					showError(
+						`Could not decode this HEIC file (${
+							err instanceof Error ? err.message : 'unsupported variant'
+						}).`,
+					);
+					return;
+				}
+			}
+
+			const url = URL.createObjectURL(decodedBlob || file);
+			previewImg.src = url;
+			previewWrap.classList.remove('hidden');
+		});
+
+		function showError(message) {
+			// message may embed a user-controlled filename/error string —
+			// escape before assigning via innerHTML.
+			errorBox.innerHTML = escapeHtml(message);
+			errorBox.classList.remove('hidden');
+		}
+
+		function hideError() {
+			errorBox.classList.add('hidden');
+			errorBox.textContent = '';
+		}
+
+		function hideResult() {
+			resultWrap.classList.add('hidden');
+			if (lastObjectUrl) {
+				URL.revokeObjectURL(lastObjectUrl);
+				lastObjectUrl = null;
+			}
+		}
+
+		function setStatus(text, percent) {
+			statusWrap.classList.remove('hidden');
+			statusText.textContent = text;
+			if (typeof percent === 'number') {
+				const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+				statusPercent.textContent = `${clamped}%`;
+				progressBar.style.width = `${clamped}%`;
+			} else {
+				statusPercent.textContent = '';
+				progressBar.style.width = '0%';
+			}
+		}
+
+		function clearStatus() {
+			statusWrap.classList.add('hidden');
+			progressBar.style.width = '0%';
+			statusPercent.textContent = '';
+		}
+
+		function setBusy(busy) {
+			generateBtn.disabled = busy;
+			generateBtn.textContent = busy ? 'Generating…' : 'Generate Video';
+		}
+
+		async function getFFmpeg() {
+			if (ffmpeg) return ffmpeg;
+
+			setStatus('Loading engine…');
+
+			// Loaded lazily (only when the user clicks Generate) so the
+			// ffmpeg.wasm engine is never downloaded on page load.
+			const { FFmpeg } = await import('@ffmpeg/ffmpeg');
+			const { toBlobURL } = await import('@ffmpeg/util');
+
+			const instance = new FFmpeg();
+
+			instance.on('progress', ({ progress }) => {
+				if (typeof progress === 'number' && !Number.isNaN(progress)) {
+					setStatus('Rendering video…', progress * 100);
+				}
+			});
+
+			const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm';
+
+			await instance.load({
+				coreURL: await toBlobURL(
+					`${baseURL}/ffmpeg-core.js`,
+					'text/javascript'
+				),
+				wasmURL: await toBlobURL(
+					`${baseURL}/ffmpeg-core.wasm`,
+					'application/wasm'
+				),
+			});
+
+			ffmpeg = instance;
+			return ffmpeg;
+		}
+
+		function extForInput(file) {
+			const name = file.name || '';
+			const match = /\.([a-zA-Z0-9]+)$/.exec(name);
+			if (match) return match[1].toLowerCase();
+			if (file.type === 'image/png') return 'png';
+			if (file.type === 'image/webp') return 'webp';
+			return 'jpg';
+		}
+
+		async function generateVideo() {
+			hideError();
+			hideResult();
+
+			if (!selectedFile) {
+				showError('Please choose an image first.');
+				return;
+			}
+
+			let duration = parseInt(durationInput.value, 10);
+			if (Number.isNaN(duration) || duration < 1) duration = 1;
+			if (duration > 30) duration = 30;
+			durationInput.value = String(duration);
+			durationRange.value = String(duration);
+
+			const format = formatSelect.value === 'webm' ? 'webm' : 'mp4';
+			const inputExt = decodedBlob ? 'png' : extForInput(selectedFile);
+			const inputName = `input.${inputExt}`;
+			const outputName = format === 'mp4' ? 'output.mp4' : 'output.webm';
+
+			setBusy(true);
+
+			let engine;
+			try {
+				engine = await getFFmpeg();
+			} catch (err) {
+				setBusy(false);
+				clearStatus();
+				showError(
+					'Could not load the video engine. Check your connection and try again.'
+				);
+				console.error(err);
+				return;
+			}
+
+			try {
+				const { fetchFile } = await import('@ffmpeg/util');
+
+				setStatus('Preparing image…', 0);
+				await engine.writeFile(
+					inputName,
+					await fetchFile(decodedBlob || selectedFile),
+				);
+
+				setStatus('Rendering video…', 0);
+
+				const scaleFilter = 'scale=trunc(iw/2)*2:trunc(ih/2)*2';
+
+				let args;
+				if (format === 'mp4') {
+					args = [
+						'-loop',
+						'1',
+						'-i',
+						inputName,
+						'-c:v',
+						'libx264',
+						'-t',
+						String(duration),
+						'-pix_fmt',
+						'yuv420p',
+						'-vf',
+						scaleFilter,
+						outputName,
+					];
+				} else {
+					// -deadline realtime -cpu-used 8 forces libvpx-vp9's fastest,
+					// lowest-effort single-pass encode path. Without these flags,
+					// this specific ffmpeg.wasm build (core@0.12.10) reliably throws
+					// "RuntimeError: Out of bounds memory access" inside the VP9
+					// encoder — a wasm memory-growth issue in the default (slower,
+					// higher-effort) encode path, confirmed by direct testing.
+					args = [
+						'-loop',
+						'1',
+						'-i',
+						inputName,
+						'-c:v',
+						'libvpx-vp9',
+						'-t',
+						String(duration),
+						'-pix_fmt',
+						'yuv420p',
+						'-vf',
+						scaleFilter,
+						'-b:v',
+						'2M',
+						'-deadline',
+						'realtime',
+						'-cpu-used',
+						'8',
+						outputName,
+					];
+				}
+
+				console.log('DEBUG_EXEC_ARGS', JSON.stringify(args));
+				await engine.exec(args);
+
+				const data = await engine.readFile(outputName);
+				const mime = format === 'mp4' ? 'video/mp4' : 'video/webm';
+				const blob = new Blob([data.buffer], { type: mime });
+				const url = URL.createObjectURL(blob);
+				lastObjectUrl = url;
+
+				resultVideo.src = url;
+				downloadLink.href = url;
+				downloadLink.download = `stillmotion.${format}`;
+				resultWrap.classList.remove('hidden');
+
+				setStatus('Done', 100);
+				setTimeout(clearStatus, 1500);
+			} catch (err) {
+				clearStatus();
+				showError(
+					'Something went wrong while rendering the video. Try a different image or format.'
+				);
+				console.error(err);
+			} finally {
+				// Clean up virtual FS files after each run so repeated
+				// conversions don't leak memory inside ffmpeg.wasm.
+				try {
+					await engine.deleteFile(inputName);
+				} catch {
+					// ignore — file may not have been written
+				}
+				try {
+					await engine.deleteFile(outputName);
+				} catch {
+					// ignore — file may not have been produced
+				}
+				setBusy(false);
+			}
+		}
+
+		generateBtn.addEventListener('click', generateVideo);
+	</script>
+</Layout>

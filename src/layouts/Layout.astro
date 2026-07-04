@@ -1,0 +1,82 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	canonicalPath?: string;
+}
+
+const { title, description, canonicalPath = '/' } = Astro.props;
+const siteUrl = Astro.site?.toString() ?? 'https://toprmrproducer.github.io/stillmotion/';
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(
+	`${base.replace(/\/$/, '')}${canonicalPath}`,
+	siteUrl
+).toString();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+		<link rel="canonical" href={canonical} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body class="min-h-screen antialiased" style="background-color:#FAF6EC; color:#5C4F3D;">
+		<header class="border-b" style="border-color:#E8DFC8;">
+			<nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+				<a
+					href={base}
+					class="text-xl font-semibold tracking-tight"
+					style="font-family:'Fraunces',serif; color:#2B2013;"
+				>
+					StillMotion
+				</a>
+				<div class="hidden items-center gap-6 text-sm font-medium sm:flex" style="color:#5C4F3D;">
+					<a href={`${base}about`} class="transition hover:opacity-70">About</a>
+					<a href={`${base}faq`} class="transition hover:opacity-70">FAQ</a>
+				</div>
+			</nav>
+		</header>
+
+		<main class="mx-auto max-w-5xl px-6 py-14">
+			<slot />
+		</main>
+
+		<footer class="mt-20 border-t" style="border-color:#E8DFC8;">
+			<div class="mx-auto max-w-5xl px-6 py-10 text-sm" style="color:#5C4F3D;">
+				<p>
+					Everything runs locally in your browser. Nothing you upload is ever
+					sent to a server.
+				</p>
+				<div class="mt-4 flex gap-6">
+					<a href={`${base}about`} class="hover:opacity-70">About</a>
+					<a href={`${base}privacy`} class="hover:opacity-70">Privacy Policy</a>
+					<a href={`${base}faq`} class="hover:opacity-70">FAQ</a>
+				</div>
+				<p class="mt-4" style="color:#8A7C64;">
+					&copy; {new Date().getFullYear()} StillMotion. All rights reserved.
+				</p>
+			</div>
+		</footer>
+	</body>
+</html>

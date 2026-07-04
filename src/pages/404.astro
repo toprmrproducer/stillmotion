@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+	title="Page Not Found — StillMotion"
+	description="This page could not be found."
+	canonicalPath="/404"
+>
+	<section class="mx-auto max-w-xl text-center">
+		<p class="text-sm font-semibold uppercase tracking-wide" style="color:#C9982E;">404</p>
+		<h1 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Page not found</h1>
+		<p class="mt-4 text-base" style="color:#5C4F3D;">
+			The page you're looking for doesn't exist or has moved.
+		</p>
+		<a
+			href={import.meta.env.BASE_URL}
+			class="mt-8 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold text-white"
+			style="background:#C9982E;"
+		>
+			Back to StillMotion
+		</a>
+	</section>
+</Layout>
