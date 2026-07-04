@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://toprmrproducer.github.io',
-  base: '/stillmotion',
+  base: '/stillmotion/',
 
   vite: {
     plugins: [tailwindcss()]
