@@ -52,23 +52,35 @@ elsewhere. If a new tool idea comes up, it gets its own project under
 
 ## Design system (mandatory — do not deviate)
 
-Premium cream/gold editorial look, NOT the generic white/cyan AI-tool
-aesthetic used by the multi-tool AnyConvert site.
+Premium light editorial look on a WHITE background, NOT the generic
+white/cyan AI-tool aesthetic used by the multi-tool AnyConvert site. This is
+the canonical design system shared across the whole tool family (unified
+6 Jul 2026). Light theme only — never a dark background.
 
-- Background: `#FAF6EC` (warm cream)
-- Card/surface: `#FFFFFF` with a warm `#E8DFC8` border (never gray)
-- Headings: `#2B2013` (warm espresso brown, not pure black)
-- Body text: `#5C4F3D` (warm brown-gray)
-- Accent / CTA / links / active states: `#C9982E` (warm gold), hover `#B8860B`
-- Fonts: **Fraunces** (display/headings — soft-serif, editorial, premium
-  feel) + **Inter** (body, labels, buttons, all interactive UI). Both loaded
-  via Google Fonts `<link>` in `Layout.astro`'s `<head>` with
-  `display=swap`. Headings use weight 600–700 and slightly negative
-  letter-spacing (`-0.02em`) for a tightened, premium look.
-- Generous whitespace, soft shadows only (never harsh), rounded-xl corners,
-  no gradients, no dark mode. Cream-only aesthetic is the whole point.
+- Page background: `#ffffff` (white)
+- Card/panel surface: `#faf8f3` (barely-warm off-white) with a warm
+  `#eae4d6` border (never gray)
+- Headings: `#221b10` (near-black espresso)
+- Body text: `#4a4234` (warm brown-gray), muted `#8a7e68`
+- Accent / CTA / links / active states: `#c9982e` (warm gold), hover
+  `#b8860b`
+- Fonts: **Sora** (display/headings, weight 700/800) + **Manrope** (body,
+  labels, buttons, all interactive UI, weight 400–800). Both loaded via one
+  Google Fonts `<link>` in `Layout.astro`'s `<head>` with `display=swap`.
+  Headings use `letter-spacing:-0.025em`. Do NOT reintroduce Fraunces/Inter.
+- Larger, readable text: body 17px, nav/labels 15px, generous spacing.
+- Layout is ad-ready: the `<main>` content column is hard-capped at 820px and
+  centered, leaving real empty gutters left/right plus top/bottom breathing
+  room. Reserved, invisible-until-filled AdSense slots (top leaderboard, L/R
+  sticky skyscrapers shown only at >=1280px, bottom in-article) live in
+  `Layout.astro`. Empty ad slots render nothing (`.ad-slot:empty`), so no
+  visible placeholder boxes — better for AdSense review.
+- Generous whitespace, soft shadows only (never harsh), rounded-xl/2xl
+  corners, no gradients, no dark mode.
 - This must read like a small, confident, boutique SaaS product — not a
   generic free-tool dump.
+- A collapsible Snake mini-game sits near the bottom of the tool page as a
+  boredom-filler while the (slow) encode runs.
 
 ## Structure
 

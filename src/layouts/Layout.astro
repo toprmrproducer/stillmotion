@@ -37,43 +37,92 @@ const canonical = new URL(
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
 			rel="stylesheet"
 		/>
+
+		<style>
+			/* Reserved AdSense slots: invisible + zero-height until a real
+			   <ins class="adsbygoogle"> is dropped in. Empty placeholder ad
+			   boxes can hurt AdSense review, so nothing renders until filled.
+			   Once populated, min-height reserves space to avoid layout shift. */
+			.ad-slot:empty {
+				min-height: 0 !important;
+				border: 0 !important;
+			}
+			.ad-slot {
+				min-height: 0;
+			}
+		</style>
 	</head>
-	<body class="min-h-screen antialiased" style="background-color:#FAF6EC; color:#5C4F3D;">
-		<header class="border-b" style="border-color:#E8DFC8;">
-			<nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+	<body class="min-h-screen antialiased" style="background-color:#FFFFFF; color:#4A4234;">
+		<header class="border-b" style="border-color:#EAE4D6; background:#FFFFFF;">
+			<nav class="mx-auto flex max-w-[820px] items-center justify-between px-6 py-5">
 				<a
 					href={base}
-					class="text-xl font-semibold tracking-tight"
-					style="font-family:'Fraunces',serif; color:#2B2013;"
+					class="text-xl font-extrabold tracking-tight"
+					style="font-family:'Sora',sans-serif; color:#221B10; letter-spacing:-0.03em;"
 				>
 					StillMotion
 				</a>
-				<div class="hidden items-center gap-6 text-sm font-medium sm:flex" style="color:#5C4F3D;">
-					<a href={`${base}about`} class="transition hover:opacity-70">About</a>
-					<a href={`${base}faq`} class="transition hover:opacity-70">FAQ</a>
+				<div class="hidden items-center gap-7 text-[15px] font-semibold sm:flex" style="color:#4A4234;">
+					<a href={`${base}about`} class="transition hover:text-[#B8860B]">About</a>
+					<a href={`${base}faq`} class="transition hover:text-[#B8860B]">FAQ</a>
 				</div>
 			</nav>
 		</header>
 
-		<main class="mx-auto max-w-5xl px-6 py-14">
-			<slot />
-		</main>
+		{/* Top leaderboard ad slot — centered directly below the header, above
+		    the content. Invisible until a real <ins> is dropped in. */}
+		<div class="ad-slot ad-leaderboard mx-auto px-6" data-ad-slot="leaderboard" style="max-width:970px;min-height:0">
+			<!-- AdSense: paste responsive <ins class="adsbygoogle"> here -->
+		</div>
 
-		<footer class="mt-20 border-t" style="border-color:#E8DFC8;">
-			<div class="mx-auto max-w-5xl px-6 py-10 text-sm" style="color:#5C4F3D;">
+		{/* Layout row: [left skyscraper] [820px content column] [right skyscraper].
+		    The two skyscrapers sit in the genuinely empty gutters and only show at
+		    >=1280px. The content column is HARD-CAPPED at 820px and centered so
+		    there is ample empty space on all four sides (ad-ready), with generous
+		    top/bottom breathing room. Do not widen the column. */}
+		<div class="mx-auto flex w-full max-w-[1400px] items-start justify-center gap-8 px-0">
+			<aside
+				class="ad-slot hidden shrink-0 xl:block"
+				data-ad-slot="skyscraper-left"
+				style="position:sticky; top:120px; width:160px; min-height:0"
+			>
+				<!-- AdSense: paste responsive <ins class="adsbygoogle"> here -->
+			</aside>
+
+			<main class="mx-auto w-full max-w-[820px] px-6 pt-24 pb-28">
+				<slot />
+			</main>
+
+			<aside
+				class="ad-slot hidden shrink-0 xl:block"
+				data-ad-slot="skyscraper-right"
+				style="position:sticky; top:120px; width:160px; min-height:0"
+			>
+				<!-- AdSense: paste responsive <ins class="adsbygoogle"> here -->
+			</aside>
+		</div>
+
+		{/* Bottom in-article ad slot — centered just above the footer.
+		    Invisible until a real <ins> is dropped in. */}
+		<div class="ad-slot ad-in-article mx-auto px-6" data-ad-slot="in-article" style="max-width:728px;min-height:0">
+			<!-- AdSense: paste responsive <ins class="adsbygoogle"> here -->
+		</div>
+
+		<footer class="mt-8 border-t" style="border-color:#EAE4D6; background:#FAF8F3;">
+			<div class="mx-auto max-w-[820px] px-6 py-12 text-[15px]" style="color:#4A4234;">
 				<p>
 					Everything runs locally in your browser. Nothing you upload is ever
 					sent to a server.
 				</p>
-				<div class="mt-4 flex gap-6">
-					<a href={`${base}about`} class="hover:opacity-70">About</a>
-					<a href={`${base}privacy`} class="hover:opacity-70">Privacy Policy</a>
-					<a href={`${base}faq`} class="hover:opacity-70">FAQ</a>
+				<div class="mt-4 flex gap-6 font-semibold">
+					<a href={`${base}about`} class="transition hover:text-[#B8860B]">About</a>
+					<a href={`${base}privacy`} class="transition hover:text-[#B8860B]">Privacy Policy</a>
+					<a href={`${base}faq`} class="transition hover:text-[#B8860B]">FAQ</a>
 				</div>
-				<p class="mt-4" style="color:#8A7C64;">
+				<p class="mt-4" style="color:#8A7E68;">
 					&copy; {new Date().getFullYear()} StillMotion. All rights reserved.
 				</p>
 			</div>

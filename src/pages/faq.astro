@@ -16,15 +16,19 @@ const faqs = [
 	},
 	{
 		q: 'What video formats can I export to?',
-		a: 'MP4 (H.264) and WebM (VP9), both widely supported across social platforms, editors, and devices.',
+		a: 'MP4 (H.264) and WebM (VP8), both widely supported across social platforms, editors, and devices. We use the VP8 codec for WebM because the in-browser VP9 encoder is unstable.',
+	},
+	{
+		q: 'What is the Ken Burns motion option?',
+		a: 'It gives your clip a subtle cinematic drift instead of a frozen frame. You can choose a slow zoom in, a slow zoom out, or a gentle pan left or right. Each frame is rendered on your device, so a motion clip takes a little longer to encode than a static one.',
 	},
 	{
 		q: 'How long can the video be?',
-		a: 'Anywhere from 1 to 30 seconds. Your still photo is looped for the entire duration.',
+		a: 'Anywhere from 1 to 30 seconds. Your still photo is looped, or animated with Ken Burns motion, for the entire duration.',
 	},
 	{
 		q: 'Why did the conversion fail or seem stuck?',
-		a: 'The first click loads the ffmpeg.wasm engine, which is a few megabytes and can take a moment on a slow connection. Very large source photos can also take longer to encode. If it truly fails, try a smaller image or refresh and try again.',
+		a: 'The first click loads the ffmpeg.wasm engine, which is a few megabytes and can take a moment on a slow connection. Very large source photos can also take longer to encode. If it truly fails, try a smaller image, switch the output format, or refresh and try again.',
 	},
 	{
 		q: 'Does this work on mobile?',
@@ -35,17 +39,17 @@ const faqs = [
 
 <Layout
 	title="FAQ — StillMotion"
-	description="Frequently asked questions about StillMotion, the private browser-based photo-to-video converter."
+	description="Frequently asked questions about StillMotion, the private browser-based photo-to-video converter with Ken Burns motion."
 	canonicalPath="/faq"
 >
-	<section class="mx-auto max-w-2xl">
-		<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Frequently Asked Questions</h1>
+	<section>
+		<h1 class="text-3xl sm:text-4xl">Frequently Asked Questions</h1>
 
 		<div class="mt-8 space-y-6">
 			{faqs.map((item) => (
-				<div class="rounded-xl p-5" style="background:#FFFFFF; border:1px solid #E8DFC8;">
-					<h2 class="text-base font-semibold" style="color:#2B2013;">{item.q}</h2>
-					<p class="mt-2 text-sm leading-relaxed" style="color:#5C4F3D;">{item.a}</p>
+				<div class="rounded-xl p-5" style="background:#FAF8F3; border:1px solid #EAE4D6;">
+					<h2 class="text-base font-bold" style="color:#221B10;">{item.q}</h2>
+					<p class="mt-2 text-[15px] leading-relaxed" style="color:#4A4234;">{item.a}</p>
 				</div>
 			))}
 		</div>
